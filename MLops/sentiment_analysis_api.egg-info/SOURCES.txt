@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+setup.py
+sentiment_analysis_api.egg-info/PKG-INFO
+sentiment_analysis_api.egg-info/SOURCES.txt
+sentiment_analysis_api.egg-info/dependency_links.txt
+sentiment_analysis_api.egg-info/requires.txt
+sentiment_analysis_api.egg-info/top_level.txt
+src/__init__.py
+src/flask_api.py
+src/sentiment_model.py
+tests/__init__.py
+tests/test_model.py

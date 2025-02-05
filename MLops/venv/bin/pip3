@@ -1,4 +1,4 @@
-#!/Users/reeteshkumar/devops/Devops/MLops/venv/bin/python3.11
+#!/home/ubuntu/Devops/MLops/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

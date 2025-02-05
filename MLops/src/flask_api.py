@@ -1,7 +1,13 @@
 import os
+import sys
 import logging
 from flask import Flask, request, jsonify
 from werkzeug.exceptions import HTTPException
+
+# Add project root to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import from src package
 from src.sentiment_model import SentimentClassifier
 
 # Configure logging
@@ -27,15 +33,13 @@ def predict_sentiment():
     
     Expected JSON input:
     {
-        "texts": ["list of texts to classify"],
-        "include_proba": false  # Optional flag to include probabilities
+        "texts": ["list of texts to classify"]
     }
     
     Returns:
     {
         "predictions": [list of sentiment labels],
-        "labels": [list of label names],
-        "probabilities": [optional probabilities]
+        "labels": [list of label names]
     }
     """
     try:
@@ -45,7 +49,6 @@ def predict_sentiment():
         
         data = request.get_json()
         texts = data.get('texts', [])
-        include_proba = data.get('include_proba', False)
         
         # Validate texts
         if not texts:
@@ -64,11 +67,6 @@ def predict_sentiment():
             "labels": labels
         }
         
-        # Optionally include probabilities
-        if include_proba:
-            probabilities = classifier.predict_proba(texts)
-            response["probabilities"] = probabilities.tolist()
-        
         logger.info(f"Processed {len(texts)} text(s)")
         return jsonify(response)
     
@@ -80,12 +78,6 @@ def predict_sentiment():
 def health_check():
     """
     Basic health check endpoint.
-    
-    Returns:
-    {
-        "status": "healthy",
-        "model_loaded": bool
-    }
     """
     return jsonify({
         "status": "healthy", 
@@ -116,4 +108,4 @@ def handle_global_exception(e):
     }), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)
