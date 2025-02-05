@@ -1,0 +1,99 @@
+import json
+import pytest
+from src.flask_api import app
+
+@pytest.fixture
+def client():
+    """
+    Create a test client for the Flask application
+    """
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
+
+def test_health_endpoint(client):
+    """
+    Test the health check endpoint
+    """
+    response = client.get('/health')
+    assert response.status_code == 200
+    
+    data = json.loads(response.data)
+    assert data['status'] == 'healthy'
+    assert 'model_loaded' in data
+
+def test_predict_endpoint(client):
+    """
+    Test the sentiment prediction endpoint
+    """
+    # Prepare test data
+    test_data = {
+        'texts': [
+            'I love this product',
+            'This is terrible'
+        ]
+    }
+    
+    # Send POST request
+    response = client.post('/predict', 
+                           data=json.dumps(test_data),
+                           content_type='application/json')
+    
+    # Check response
+    assert response.status_code == 200
+    
+    # Parse response
+    data = json.loads(response.data)
+    
+    # Validate response structure
+    assert 'predictions' in data
+    assert 'labels' in data
+    assert len(data['predictions']) == 2
+    assert len(data['labels']) == 2
+    assert all(label in ['Positive', 'Negative'] for label in data['labels'])
+
+def test_predict_with_probabilities(client):
+    """
+    Test prediction endpoint with probabilities
+    """
+    # Prepare test data
+    test_data = {
+        'texts': ['I love this product'],
+        'include_proba': True
+    }
+    
+    # Send POST request
+    response = client.post('/predict', 
+                           data=json.dumps(test_data),
+                           content_type='application/json')
+    
+    # Check response
+    assert response.status_code == 200
+    
+    # Parse response
+    data = json.loads(response.data)
+    
+    # Validate response structure
+    assert 'probabilities' in data
+    assert len(data['probabilities'][0]) == 2  # Probabilities for two classes
+
+def test_empty_texts_prediction(client):
+    """
+    Test prediction endpoint with empty texts
+    """
+    # Prepare test data
+    test_data = {'texts': []}
+    
+    # Send POST request
+    response = client.post('/predict', 
+                           data=json.dumps(test_data),
+                           content_type='application/json')
+    
+    # Check response
+    assert response.status_code == 400
+    
+    # Parse response
+    data = json.loads(response.data)
+    
+    # Validate error response
+    assert 'error' in data

@@ -1,0 +1,24 @@
+# Base requirements
+-r base.txt
+
+# Testing
+pytest==7.3.1
+pytest-cov==4.0.0
+coverage==7.2.3
+
+# Linting and Formatting
+flake8==6.0.0
+black==23.3.0
+mypy==1.3.0
+
+# Debugging
+ipython==8.12.1
+ipdb==0.13.13
+
+# Documentation
+sphinx==6.2.1
+sphinx_rtd_theme==1.2.0
+
+# Additional dev dependencies
+wheel==0.40.0
+setuptools==67.7.2
